@@ -47,17 +47,22 @@ const MONTHS = [
       {
         week: "Week 4", label: "OOP — Think in Systems",
         items: [
-          { t: "Classes & Objects", d: "__init__, self, instance methods. A class is a blueprint. An object is a living instance of it." },
-          { t: "Inheritance", d: "Parent/child, super(), method overriding. Don't repeat logic — inherit it." },
-          { t: "Encapsulation", d: "_protected, __private, @property. Hide internals, expose behaviour." },
-          { t: "Magic Methods", d: "__str__, __repr__, __len__, __eq__. Make your objects feel like Python built-ins." },
+          { t: "Classes & Objects", d: "__init__, self, instance methods. A class is a blueprint. An object is a living instance of it. Understand memory layout — what happens when you write MyClass()." },
+          { t: "Inheritance", d: "Parent/child classes, super(), method overriding. Single, multi-level, and multiple inheritance. Don't repeat logic — inherit it. Understand MRO (Method Resolution Order) — Python's C3 linearization." },
+          { t: "Encapsulation", d: "_protected, __private, @property. Getters and setters the Pythonic way. Hide internals, expose behaviour. Rule: make everything private by default, expose only what must be public." },
+          { t: "Polymorphism — Method Overriding", d: "Same method name, different behaviour across subclasses. A Dog and Cat both have .speak() — different results. Override parent methods in child classes. Runtime decides which version runs." },
+          { t: "Polymorphism — Duck Typing", d: "Python doesn't care about the class — only the behaviour. If it has a .fly() method, it flies. Write functions that work on any object with the right methods, not just one specific type." },
+          { t: "Polymorphism — Operator Overloading", d: "__add__, __mul__, __lt__, __eq__ let your objects work with +, *, <, == naturally. Write a Vector class where v1 + v2 adds coordinates. This is exactly how NumPy arrays work under the hood." },
+          { t: "Abstraction — Concept", d: "Hiding complexity behind a clean interface. The user of a class shouldn't know HOW it works — only WHAT it does. A Car has .start() — you don't need to know about fuel injection to drive it." },
+          { t: "Abstraction — abc Module", d: "from abc import ABC, abstractmethod. Define abstract base classes that FORCE subclasses to implement specific methods. Skip an abstract method in a subclass and Python raises an error immediately at instantiation." },
+          { t: "Magic Methods", d: "__str__, __repr__, __len__, __contains__, __iter__, __next__. Make your objects behave like Python built-ins. __repr__ is for developers, __str__ is for users. Every class you write should have both." },
         ],
-        build: "Library Management System — Book, Member, Library classes. Borrow/return, late fees, JSON persistence.",
+        build: "Library Management System — Book (title, author, ISBN), Member (name, borrowed list), Library class. Abstract base class for Member. Polymorphic fine calculation: RegularMember vs PremiumMember have different fine rates via method overriding. JSON persistence.",
       },
     ],
     capstone: {
       name: "Personal Finance Dashboard (CLI)",
-      desc: "Multi-user system: register/login (file-based), track income & expenses by category, monthly budget limits, terminal bar charts, CSV exports. Full OOP. Exception-safe. Daily git commits.",
+      desc: "Multi-user system: register/login (file-based), track income & expenses by category, monthly budget limits, terminal bar charts, CSV exports. Full OOP — uses all 4 pillars: Encapsulation, Inheritance, Polymorphism, Abstraction. Exception-safe. Daily git commits.",
     },
   },
   {
@@ -389,6 +394,444 @@ function DifficultyDots({ level, color }) {
           transition: "background 0.3s",
         }} />
       ))}
+    </div>
+  );
+}
+
+const DIFFICULTY_STYLES = {
+  "Foundation":        { color: "#22C55E", bg: "rgba(34,197,94,0.1)",   border: "rgba(34,197,94,0.35)",   glow: "rgba(34,197,94,0.2)"   },
+  "Engineer":          { color: "#60A5FA", bg: "rgba(96,165,250,0.1)",  border: "rgba(96,165,250,0.35)",  glow: "rgba(96,165,250,0.2)"  },
+  "Advanced":          { color: "#FB923C", bg: "rgba(251,146,60,0.1)",  border: "rgba(251,146,60,0.35)",  glow: "rgba(251,146,60,0.2)"  },
+  "Advanced Systems":  { color: "#FB923C", bg: "rgba(251,146,60,0.1)",  border: "rgba(251,146,60,0.35)",  glow: "rgba(251,146,60,0.2)"  },
+  "System Architect":  { color: "#C084FC", bg: "rgba(192,132,252,0.1)", border: "rgba(192,132,252,0.35)", glow: "rgba(192,132,252,0.2)" },
+  "AI Engineer":       { color: "#A78BFA", bg: "rgba(167,139,250,0.1)", border: "rgba(167,139,250,0.35)", glow: "rgba(167,139,250,0.2)" },
+  "AI Systems":        { color: "#F87171", bg: "rgba(248,113,113,0.1)", border: "rgba(248,113,113,0.35)", glow: "rgba(248,113,113,0.2)" },
+  "Insane":            { color: "#F472B6", bg: "rgba(244,114,182,0.1)", border: "rgba(244,114,182,0.35)", glow: "rgba(244,114,182,0.2)" },
+};
+
+const FOUNDATION_PROJECTS = [
+  {
+    id: "fp1", title: "CLI Productivity Toolkit", emoji: "🛠️",
+    difficulty: "Foundation", time: "1–2 weeks",
+    glow: "#FB923C", glowRgb: "251,146,60",
+    desc: "Build terminal-based productivity apps that teach engineering discipline and architecture thinking.",
+    instructions: ["Notes manager with tags & search","Expense tracker with categories & reports","Password manager with encryption","Pomodoro timer with session history","JSON/SQLite storage backend","Modular folder structure (one file per feature)","Full OOP architecture","Robust error handling & input validation","Export/import support (CSV + JSON)"],
+    stack: ["Python", "SQLite", "Rich", "JSON"],
+  },
+  {
+    id: "fp2", title: "DSA Visualizer", emoji: "📊",
+    difficulty: "Engineer", time: "2 weeks",
+    glow: "#A78BFA", glowRgb: "167,139,250",
+    desc: "Visualize algorithms to deeply understand problem solving and computational thinking.",
+    instructions: ["Sorting algorithm animations (bubble, merge, quick)","Pathfinding: BFS, DFS, Dijkstra on a grid","Graph traversal with step-by-step highlighting","Recursion tree visualization","Interactive step controls + speed slider","Color-coded state: visited, current, sorted"],
+    stack: ["Python", "Tkinter", "React (optional)"],
+  },
+  {
+    id: "fp3", title: "Mini Git Engine", emoji: "🔀",
+    difficulty: "Engineer", time: "2–3 weeks",
+    glow: "#F87171", glowRgb: "248,113,113",
+    desc: "Rebuild core Git concepts from scratch to understand version control internally.",
+    instructions: ["init, add, commit commands","Branch creation and switching","Commit log with history tree","File diff calculation","File snapshots via hashing (SHA-1)","Staging area simulation","Object store (blobs, trees, commits)"],
+    stack: ["Python"],
+  },
+  {
+    id: "fp4", title: "Developer Portfolio OS", emoji: "🖥️",
+    difficulty: "Advanced", time: "2 weeks",
+    glow: "#22D3EE", glowRgb: "34,211,238",
+    desc: "Build a futuristic terminal-style developer portfolio with a powerful visual identity.",
+    instructions: ["Terminal-style UI with command palette","AI assistant (Claude/GPT) answering questions about you","Live GitHub stats + repo showcase","Smooth page transitions and animations","Responsive design for all screen sizes","Dark mode with neon accents"],
+    stack: ["Next.js", "Tailwind", "Framer Motion", "Claude API"],
+  },
+];
+
+const ELITE_PROJECTS = [
+  {
+    id: "ep1", title: "JARVIS AI Assistant", emoji: "🤖",
+    difficulty: "System Architect", time: "1–2 months",
+    glow: "#FBBF24", glowRgb: "251,191,36",
+    desc: "A full AI operating assistant with memory, automation, voice interaction, and local intelligence.",
+    instructions: ["Wake-word voice interface (Whisper STT + ElevenLabs TTS)","Long-term episodic memory via vector DB","Browser automation with Playwright","Desktop automation (open apps, manage files)","Multi-agent reasoning system","Local LLM fallback with Ollama","RAG pipeline over your personal notes/docs","Plugin architecture — add new tools as modules","React dashboard showing active tools + memory"],
+    stack: ["Python", "FastAPI", "Whisper", "ChromaDB", "Ollama", "Playwright"],
+  },
+  {
+    id: "ep2", title: "Distributed File Storage", emoji: "☁️",
+    difficulty: "Advanced", time: "3 weeks",
+    glow: "#60A5FA", glowRgb: "96,165,250",
+    desc: "Build a mini Google Drive — a distributed storage engine with real engineering architecture.",
+    instructions: ["Chunked file upload with progress tracking","AES-256 file encryption before storage","Replication across multiple storage nodes","Optimized parallel download assembly","REST API with presigned URLs","File deduplication via content hashing","Admin dashboard with storage analytics"],
+    stack: ["FastAPI", "PostgreSQL", "Docker", "Redis", "React"],
+  },
+  {
+    id: "ep3", title: "AI Coding Copilot", emoji: "🧑‍💻",
+    difficulty: "AI Engineer", time: "3 weeks",
+    glow: "#C084FC", glowRgb: "192,132,252",
+    desc: "A context-aware coding assistant that understands entire repositories and explains code.",
+    instructions: ["Ingest entire GitHub repos into vector DB","Natural language chat over your codebase","Semantic code search across all files","Inline code explanation and documentation generation","Bug detection with fix suggestions","Multi-file context awareness","VS Code extension (bonus)"],
+    stack: ["Python", "LangChain", "ChromaDB", "Claude API", "FastAPI"],
+  },
+  {
+    id: "ep4", title: "Your Own Programming Language", emoji: "⚡",
+    difficulty: "Insane", time: "1 month",
+    glow: "#F472B6", glowRgb: "244,114,182",
+    desc: "Create your own interpreted programming language from scratch. This is the final boss.",
+    instructions: ["Lexer: tokenize raw source code","Parser: build an AST from token stream","AST node types for all language constructs","Tree-walk interpreter for execution","Variables, functions, closures, scope","Control flow: if/else, while, for","Standard library (print, math, string ops)","Error reporting with line numbers","REPL (read-eval-print loop)"],
+    stack: ["Python", "Rust (optional)"],
+  },
+];
+
+function ProjectForge() {
+  const [forgeTab, setForgeTab] = useState("foundation");
+  const [openProject, setOpenProject] = useState(null);
+  const [tabAnimating, setTabAnimating] = useState(false);
+
+  const switchTab = (t) => {
+    if (t === forgeTab) return;
+    setTabAnimating(true);
+    setOpenProject(null);
+    setTimeout(() => { setForgeTab(t); setTabAnimating(false); }, 180);
+  };
+
+  const projects = forgeTab === "foundation" ? FOUNDATION_PROJECTS : ELITE_PROJECTS;
+
+  return (
+    <div style={{ marginBottom: 64, position: "relative" }}>
+      {/* Ambient glow */}
+      <div style={{
+        position: "absolute", top: -60, left: "50%", transform: "translateX(-50%)",
+        width: 600, height: 300, borderRadius: "50%",
+        background: "radial-gradient(ellipse, rgba(255,60,60,0.07) 0%, rgba(255,100,0,0.04) 40%, transparent 70%)",
+        pointerEvents: "none", zIndex: 0,
+      }} />
+
+      {/* Main container */}
+      <div style={{
+        position: "relative", zIndex: 1,
+        borderRadius: 20,
+        border: "1px solid rgba(255,80,50,0.25)",
+        background: "linear-gradient(160deg, rgba(30,10,5,0.95) 0%, rgba(15,10,20,0.98) 60%, rgba(10,5,25,0.97) 100%)",
+        overflow: "hidden",
+        boxShadow: "0 0 60px rgba(255,60,30,0.08), 0 0 120px rgba(200,40,100,0.05), inset 0 1px 0 rgba(255,100,50,0.1)",
+      }}>
+
+        {/* Animated grid background */}
+        <div style={{
+          position: "absolute", inset: 0, zIndex: 0, opacity: 0.03,
+          backgroundImage: `linear-gradient(rgba(255,100,50,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,100,50,1) 1px, transparent 1px)`,
+          backgroundSize: "40px 40px",
+          pointerEvents: "none",
+        }} />
+
+        {/* Floating particles */}
+        <div style={{ position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none", overflow: "hidden" }}>
+          {[
+            {x:"15%",y:"20%",d:"3s",s:3,o:0.15},{x:"80%",y:"15%",d:"4s",s:4,o:0.1},
+            {x:"60%",y:"70%",d:"5s",s:2,o:0.12},{x:"25%",y:"80%",d:"3.5s",s:3,o:0.08},
+            {x:"90%",y:"55%",d:"4.5s",s:2,o:0.1},{x:"45%",y:"35%",d:"6s",s:2,o:0.06},
+          ].map((p,i) => (
+            <div key={i} style={{
+              position: "absolute", left: p.x, top: p.y,
+              width: p.s, height: p.s, borderRadius: "50%",
+              background: "#FF6B35", opacity: p.o,
+              animation: `pulse-glow ${p.d} ease infinite`,
+            }} />
+          ))}
+        </div>
+
+        <div style={{ position: "relative", zIndex: 1, padding: "36px 32px 40px" }}>
+
+          {/* Header */}
+          <div style={{ marginBottom: 32 }}>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 24 }}>
+              {/* Icon */}
+              <div style={{
+                width: 56, height: 56, borderRadius: 16, flexShrink: 0,
+                background: "linear-gradient(135deg, #FF4500, #FF6B35, #EC4899)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 26,
+                boxShadow: "0 0 30px rgba(255,69,0,0.5), 0 0 60px rgba(255,69,0,0.2)",
+              }}>⚡</div>
+
+              <div style={{ flex: 1 }}>
+                {/* Label */}
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 8,
+                  background: "rgba(255,69,0,0.1)", border: "1px solid rgba(255,69,0,0.25)",
+                  borderRadius: 100, padding: "3px 12px",
+                  fontSize: 10, letterSpacing: 3, color: "#FF6B35",
+                  textTransform: "uppercase", marginBottom: 10,
+                  fontFamily: "'DM Sans', sans-serif",
+                }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", background: "#FF6B35", boxShadow: "0 0 6px #FF6B35", animation: "pulse-glow 2s infinite", display: "inline-block" }} />
+                  Project System • Elite Builds
+                </div>
+
+                {/* Title */}
+                <h2 style={{
+                  fontFamily: "'Syne', sans-serif",
+                  fontSize: "clamp(28px, 5vw, 48px)", fontWeight: 800,
+                  letterSpacing: "-2px", lineHeight: 1.0, marginBottom: 6,
+                  background: "linear-gradient(135deg, #FF6B35 0%, #FF4500 30%, #EC4899 70%, #F97316 100%)",
+                  WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+                }}>Project Forge</h2>
+
+                <p style={{
+                  fontFamily: "'DM Sans', sans-serif",
+                  fontSize: 14, color: "rgba(255,150,100,0.6)",
+                  fontStyle: "italic", letterSpacing: 0.5,
+                }}>Where theory becomes engineering.</p>
+              </div>
+
+              {/* Dot indicators top-right */}
+              <div style={{ display: "flex", gap: 5, paddingTop: 4 }}>
+                {["#FF4500","#FB923C","#EC4899"].map((c,i) => (
+                  <div key={i} style={{
+                    width: 8, height: 8, borderRadius: "50%",
+                    background: c, boxShadow: `0 0 8px ${c}`,
+                    animation: `pulse-glow ${2 + i * 0.5}s ease infinite`,
+                  }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Description */}
+            <p style={{
+              fontFamily: "'DM Sans', sans-serif",
+              fontSize: 14, color: "rgba(255,255,255,0.4)",
+              lineHeight: 1.9, maxWidth: 600,
+              borderLeft: "2px solid rgba(255,69,0,0.4)",
+              paddingLeft: 16,
+            }}>
+              These are <span style={{ color: "rgba(255,150,100,0.8)", fontWeight: 600 }}>not tutorial projects</span>. These are engineering systems designed to make you think like a senior developer, architect scalable software, and build a legendary GitHub portfolio.
+            </p>
+          </div>
+
+          {/* Tabs */}
+          <div style={{
+            display: "flex", gap: 6, marginBottom: 28,
+            background: "rgba(255,255,255,0.03)",
+            borderRadius: 14, padding: 5,
+            border: "1px solid rgba(255,255,255,0.06)",
+            width: "fit-content",
+          }}>
+            {[
+              { id: "foundation", label: "🏗️ Foundation Builds" },
+              { id: "elite",      label: "🔥 Elite Systems"     },
+            ].map(t => (
+              <button key={t.id} onClick={() => switchTab(t.id)} style={{
+                padding: "9px 22px", borderRadius: 10,
+                border: `1px solid ${forgeTab === t.id ? "rgba(255,69,0,0.5)" : "transparent"}`,
+                background: forgeTab === t.id
+                  ? "linear-gradient(135deg, rgba(255,69,0,0.2), rgba(236,72,153,0.15))"
+                  : "transparent",
+                color: forgeTab === t.id ? "#FF6B35" : "rgba(255,255,255,0.3)",
+                fontSize: 12, fontWeight: 600, cursor: "pointer",
+                transition: "all 0.2s ease",
+                fontFamily: "'DM Sans', sans-serif",
+                letterSpacing: 0.3,
+                boxShadow: forgeTab === t.id ? "0 0 20px rgba(255,69,0,0.15)" : "none",
+              }}>{t.label}</button>
+            ))}
+          </div>
+
+          {/* Project cards */}
+          <div style={{
+            display: "flex", flexDirection: "column", gap: 8,
+            opacity: tabAnimating ? 0 : 1,
+            transform: tabAnimating ? "translateY(8px)" : "translateY(0)",
+            transition: "opacity 0.18s ease, transform 0.18s ease",
+          }}>
+            {projects.map((proj, pi) => {
+              const isOpen = openProject === proj.id;
+              const diff = DIFFICULTY_STYLES[proj.difficulty] || DIFFICULTY_STYLES["Foundation"];
+              const isElite = forgeTab === "elite";
+
+              return (
+                <div key={proj.id} style={{
+                  borderRadius: 14,
+                  border: `1px solid ${isOpen ? proj.glow + "60" : "rgba(255,255,255,0.07)"}`,
+                  overflow: "hidden",
+                  boxShadow: isOpen ? `0 0 30px rgba(${proj.glowRgb},0.12)` : "none",
+                  transition: "box-shadow 0.25s ease, border-color 0.25s ease",
+                }}>
+                  {/* Card header */}
+                  <div
+                    onClick={() => setOpenProject(isOpen ? null : proj.id)}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 14,
+                      padding: "16px 20px",
+                      background: isOpen
+                        ? `linear-gradient(135deg, rgba(${proj.glowRgb},0.1) 0%, rgba(15,10,20,0.9) 100%)`
+                        : isElite
+                          ? "rgba(255,255,255,0.025)"
+                          : "rgba(255,255,255,0.02)",
+                      cursor: "pointer",
+                      transition: "background 0.25s ease",
+                    }}
+                  >
+                    {/* Emoji bubble */}
+                    <div style={{
+                      width: 42, height: 42, borderRadius: 12, flexShrink: 0,
+                      background: isOpen
+                        ? `linear-gradient(135deg, rgba(${proj.glowRgb},0.3), rgba(${proj.glowRgb},0.1))`
+                        : "rgba(255,255,255,0.05)",
+                      border: `1px solid rgba(${proj.glowRgb},${isOpen ? 0.4 : 0.15})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      fontSize: 20,
+                      boxShadow: isOpen ? `0 0 16px rgba(${proj.glowRgb},0.25)` : "none",
+                      transition: "all 0.25s ease",
+                    }}>{proj.emoji}</div>
+
+                    {/* Info */}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontFamily: "'Syne', sans-serif",
+                        fontSize: 15, fontWeight: 700,
+                        color: isOpen ? "#F5F3FF" : "rgba(255,255,255,0.7)",
+                        marginBottom: 6, transition: "color 0.2s",
+                      }}>{proj.title}</div>
+
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                        {/* Difficulty badge */}
+                        <span style={{
+                          fontSize: 10, fontWeight: 700, letterSpacing: 1,
+                          color: diff.color, background: diff.bg,
+                          border: `1px solid ${diff.border}`,
+                          padding: "2px 8px", borderRadius: 6,
+                          fontFamily: "'DM Sans', sans-serif",
+                          textTransform: "uppercase",
+                        }}>{proj.difficulty}</span>
+
+                        {/* Time badge */}
+                        <span style={{
+                          fontSize: 10, letterSpacing: 0.5,
+                          color: `rgba(${proj.glowRgb},0.8)`,
+                          background: `rgba(${proj.glowRgb},0.08)`,
+                          border: `1px solid rgba(${proj.glowRgb},0.2)`,
+                          padding: "2px 8px", borderRadius: 6,
+                          fontFamily: "'DM Sans', sans-serif",
+                        }}>⏱ {proj.time}</span>
+                      </div>
+                    </div>
+
+                    {/* Arrow */}
+                    <div style={{
+                      width: 28, height: 28, borderRadius: 8, flexShrink: 0,
+                      border: `1px solid rgba(${proj.glowRgb},${isOpen ? 0.5 : 0.15})`,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: isOpen ? proj.glow : "rgba(255,255,255,0.2)",
+                      fontSize: 13, transition: "all 0.25s ease",
+                      transform: isOpen ? "rotate(180deg)" : "none",
+                      background: isOpen ? `rgba(${proj.glowRgb},0.1)` : "transparent",
+                    }}>▾</div>
+                  </div>
+
+                  {/* Expanded content */}
+                  {isOpen && (
+                    <div style={{
+                      padding: "20px 20px 24px",
+                      background: `linear-gradient(180deg, rgba(${proj.glowRgb},0.05) 0%, rgba(10,5,20,0.95) 60%)`,
+                      borderTop: `1px solid rgba(${proj.glowRgb},0.15)`,
+                    }}>
+                      {/* Description */}
+                      <p style={{
+                        fontFamily: "'DM Sans', sans-serif",
+                        fontSize: 13, color: "rgba(255,255,255,0.45)",
+                        lineHeight: 1.8, marginBottom: 20,
+                        fontStyle: "italic",
+                      }}>{proj.desc}</p>
+
+                      <div style={{ display: "grid", gridTemplateColumns: "1fr auto", gap: 20, alignItems: "start" }}>
+                        {/* Instructions */}
+                        <div>
+                          <div style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 10, letterSpacing: 3, textTransform: "uppercase",
+                            color: proj.glow, marginBottom: 12, opacity: 0.8,
+                          }}>What You Build</div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {proj.instructions.map((ins, ii) => (
+                              <div key={ii} style={{
+                                display: "flex", gap: 10, alignItems: "flex-start",
+                              }}>
+                                <div style={{
+                                  width: 5, height: 5, borderRadius: "50%",
+                                  background: proj.glow, flexShrink: 0, marginTop: 6,
+                                  boxShadow: `0 0 6px ${proj.glow}`,
+                                }} />
+                                <span style={{
+                                  fontFamily: "'DM Sans', sans-serif",
+                                  fontSize: 12, color: "rgba(255,255,255,0.5)",
+                                  lineHeight: 1.6,
+                                }}>{ins}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Stack */}
+                        <div style={{ minWidth: 120 }}>
+                          <div style={{
+                            fontFamily: "'DM Sans', sans-serif",
+                            fontSize: 10, letterSpacing: 3, textTransform: "uppercase",
+                            color: proj.glow, marginBottom: 12, opacity: 0.8,
+                          }}>Tech Stack</div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                            {proj.stack.map((s, si) => (
+                              <div key={si} style={{
+                                padding: "4px 10px", borderRadius: 8,
+                                background: `rgba(${proj.glowRgb},0.08)`,
+                                border: `1px solid rgba(${proj.glowRgb},0.2)`,
+                                fontSize: 11, fontWeight: 600,
+                                color: `rgba(${proj.glowRgb},0.9)`,
+                                fontFamily: "'DM Sans', sans-serif",
+                                textAlign: "center",
+                                cursor: "default",
+                                transition: "background 0.15s",
+                              }}>{s}</div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Bottom quote */}
+          <div style={{
+            marginTop: 40,
+            paddingTop: 32,
+            borderTop: "1px solid rgba(255,69,0,0.12)",
+            textAlign: "center",
+            position: "relative",
+          }}>
+            {/* Grid bg for quote */}
+            <div style={{
+              position: "absolute", inset: 0,
+              backgroundImage: `linear-gradient(rgba(255,100,50,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,100,50,0.03) 1px, transparent 1px)`,
+              backgroundSize: "30px 30px",
+              borderRadius: 12,
+              pointerEvents: "none",
+            }} />
+            <p style={{
+              fontFamily: "'Syne', sans-serif",
+              fontSize: "clamp(13px, 2.2vw, 17px)",
+              fontWeight: 700, letterSpacing: "-0.3px",
+              lineHeight: 1.7, position: "relative",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,107,53,0.8) 50%, rgba(236,72,153,0.7) 100%)",
+              WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+              maxWidth: 560, margin: "0 auto",
+              padding: "0 12px",
+            }}>
+              "Your GitHub should not look like a tutorial graveyard.<br />
+              It should look like an engineering laboratory."
+            </p>
+          </div>
+
+        </div>
+      </div>
     </div>
   );
 }
@@ -811,6 +1254,9 @@ export default function App() {
             </div>
           </div>
         )}
+
+        {/* ── PROJECT FORGE ── */}
+        {loaded && <ProjectForge />}
 
         {/* ── RULES ── */}
         {loaded && (
