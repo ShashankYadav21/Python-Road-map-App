@@ -578,6 +578,7 @@ const ELITE_PROJECTS = [
 ];
 
 function ProjectForge() {
+  const [forgeOpen, setForgeOpen] = useState(false);
   const [forgeTab, setForgeTab] = useState("foundation");
   const [openProject, setOpenProject] = useState(null);
   const [tabAnimating, setTabAnimating] = useState(false);
@@ -605,10 +606,11 @@ function ProjectForge() {
       <div style={{
         position: "relative", zIndex: 1,
         borderRadius: 20,
-        border: "1px solid rgba(255,80,50,0.25)",
+        border: `1px solid ${forgeOpen ? "rgba(255,80,50,0.45)" : "rgba(255,80,50,0.25)"}`,
         background: "linear-gradient(160deg, rgba(30,10,5,0.95) 0%, rgba(15,10,20,0.98) 60%, rgba(10,5,25,0.97) 100%)",
         overflow: "hidden",
-        boxShadow: "0 0 60px rgba(255,60,30,0.08), 0 0 120px rgba(200,40,100,0.05), inset 0 1px 0 rgba(255,100,50,0.1)",
+        animation: "forge-border-pulse 4s ease infinite",
+        transition: "border-color 0.4s ease",
       }}>
 
         {/* Animated grid background */}
@@ -637,16 +639,26 @@ function ProjectForge() {
 
         <div style={{ position: "relative", zIndex: 1, padding: "36px 32px 40px" }}>
 
-          {/* Header */}
-          <div style={{ marginBottom: 32 }}>
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 24 }}>
+          {/* Header — entire flex row is the click target, same as month cards */}
+          <div style={{ marginBottom: forgeOpen ? 32 : 8 }}>
+            <div
+              onClick={() => setForgeOpen(v => !v)}
+              style={{
+                display: "flex", alignItems: "flex-start", gap: 20, marginBottom: 24,
+                cursor: "pointer",
+                transition: "opacity 0.2s ease",
+              }}
+            >
               {/* Icon */}
               <div style={{
                 width: 56, height: 56, borderRadius: 16, flexShrink: 0,
                 background: "linear-gradient(135deg, #FF4500, #FF6B35, #EC4899)",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 fontSize: 26,
-                boxShadow: "0 0 30px rgba(255,69,0,0.5), 0 0 60px rgba(255,69,0,0.2)",
+                boxShadow: forgeOpen
+                  ? "0 0 40px rgba(255,69,0,0.7), 0 0 80px rgba(255,69,0,0.3)"
+                  : "0 0 30px rgba(255,69,0,0.5), 0 0 60px rgba(255,69,0,0.2)",
+                transition: "box-shadow 0.4s ease",
               }}>⚡</div>
 
               <div style={{ flex: 1 }}>
@@ -679,29 +691,105 @@ function ProjectForge() {
                 }}>Where theory becomes engineering.</p>
               </div>
 
-              {/* Dot indicators top-right */}
-              <div style={{ display: "flex", gap: 5, paddingTop: 4 }}>
-                {["#FF4500","#FB923C","#EC4899"].map((c,i) => (
-                  <div key={i} style={{
-                    width: 8, height: 8, borderRadius: "50%",
-                    background: c, boxShadow: `0 0 8px ${c}`,
-                    animation: `pulse-glow ${2 + i * 0.5}s ease infinite`,
-                  }} />
-                ))}
+              {/* Dot indicators + toggle — column pattern matching month cards exactly */}
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 10, flexShrink: 0 }}>
+                <div style={{ display: "flex", gap: 5 }}>
+                  {["#FF4500","#FB923C","#EC4899"].map((c,i) => (
+                    <div key={i} style={{
+                      width: 8, height: 8, borderRadius: "50%",
+                      background: c, boxShadow: `0 0 8px ${c}`,
+                      animation: `pulse-glow ${2 + i * 0.5}s ease infinite`,
+                    }} />
+                  ))}
+                </div>
+                {/* Arrow — same 28×28 as month cards. No onClick here; parent row handles it */}
+                <div style={{
+                  width: 28, height: 28, borderRadius: 8,
+                  border: `1px solid ${forgeOpen ? "#FF6B35" : "rgba(255,69,0,0.35)"}`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: forgeOpen ? "#FF6B35" : "rgba(255,150,80,0.55)",
+                  fontSize: 13,
+                  transition: "all 0.3s ease",
+                  transform: forgeOpen ? "rotate(180deg)" : "none",
+                  background: forgeOpen ? "rgba(255,69,0,0.12)" : "rgba(255,69,0,0.04)",
+                  boxShadow: forgeOpen ? "0 0 14px rgba(255,69,0,0.4)" : "0 0 8px rgba(255,69,0,0.2)",
+                  animation: forgeOpen ? "none" : "forge-arrow-pulse 2.5s ease infinite",
+                }}>▾</div>
               </div>
             </div>
 
-            {/* Description */}
-            <p style={{
-              fontFamily: "'DM Sans', sans-serif",
-              fontSize: 14, color: "rgba(255,255,255,0.4)",
-              lineHeight: 1.9, maxWidth: 600,
-              borderLeft: "2px solid rgba(255,69,0,0.4)",
-              paddingLeft: 16,
-            }}>
-              These are <span style={{ color: "rgba(255,150,100,0.8)", fontWeight: 600 }}>not tutorial projects</span>. These are engineering systems designed to make you think like a senior developer, architect scalable software, and build a legendary GitHub portfolio.
-            </p>
+            {/* Description — outside click area so it doesn't trigger toggle */}
+            {forgeOpen && (
+              <p style={{
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 14, color: "rgba(255,255,255,0.4)",
+                lineHeight: 1.9, maxWidth: 600,
+                borderLeft: "2px solid rgba(255,69,0,0.4)",
+                paddingLeft: 16,
+                animation: "forge-reveal 0.3s ease both",
+              }}>
+                These are <span style={{ color: "rgba(255,150,100,0.8)", fontWeight: 600 }}>not tutorial projects</span>. These are engineering systems designed to make you think like a senior developer, architect scalable software, and build a legendary GitHub portfolio.
+              </p>
+            )}
           </div>
+
+          {/* ── COLLAPSED PEEK — visible only when closed ── */}
+          {!forgeOpen && (
+            <div style={{ position: "relative", marginTop: 4 }}>
+              {/* One partial card preview */}
+              <div style={{
+                borderRadius: 14, overflow: "hidden",
+                border: "1px solid rgba(255,255,255,0.07)",
+                opacity: 0.55, pointerEvents: "none",
+              }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 14,
+                  padding: "14px 20px",
+                  background: "rgba(255,255,255,0.02)",
+                }}>
+                  <div style={{
+                    width: 42, height: 42, borderRadius: 12, flexShrink: 0,
+                    background: "rgba(255,107,53,0.1)",
+                    border: "1px solid rgba(255,107,53,0.2)",
+                    display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20,
+                  }}>🛠️</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{
+                      fontFamily: "'Syne', sans-serif", fontSize: 14, fontWeight: 700,
+                      color: "rgba(255,255,255,0.5)", marginBottom: 5,
+                    }}>CLI Productivity Toolkit</div>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      <span style={{ fontSize: 10, color: "#22C55E", background: "rgba(34,197,94,0.1)", border: "1px solid rgba(34,197,94,0.3)", padding: "2px 8px", borderRadius: 6, fontFamily: "'DM Sans', sans-serif", letterSpacing: 1, textTransform: "uppercase", fontWeight: 700 }}>Foundation</span>
+                      <span style={{ fontSize: 10, color: "rgba(251,146,60,0.7)", background: "rgba(251,146,60,0.06)", border: "1px solid rgba(251,146,60,0.15)", padding: "2px 8px", borderRadius: 6, fontFamily: "'DM Sans', sans-serif" }}>⏱ 1–2 Weeks</span>
+                    </div>
+                  </div>
+                  <div style={{ fontSize: 13, color: "rgba(255,255,255,0.15)" }}>▾</div>
+                </div>
+              </div>
+              {/* Fade gradient over the peek */}
+              <div style={{
+                position: "absolute", bottom: 0, left: 0, right: 0, height: 52,
+                background: "linear-gradient(180deg, transparent 0%, rgba(15,8,18,0.92) 100%)",
+                borderRadius: "0 0 14px 14px", pointerEvents: "none",
+              }} />
+              {/* Hint text */}
+              <div style={{
+                textAlign: "center", marginTop: 16,
+                fontFamily: "'DM Sans', sans-serif",
+                fontSize: 11, letterSpacing: 3, textTransform: "uppercase",
+                color: "rgba(255,107,53,0.4)",
+              }}>
+                {FOUNDATION_PROJECTS.length + ELITE_PROJECTS.length} engineering systems inside ↑ tap to unlock
+              </div>
+            </div>
+          )}
+
+          {/* ── EXPANDED CONTENT — tabs + cards + quote ── */}
+          {forgeOpen && (
+            <div style={{
+              opacity: 1,
+              animation: "forge-reveal 0.32s ease both",
+            }}>
 
           {/* Tabs */}
           <div style={{
@@ -744,12 +832,11 @@ function ProjectForge() {
               const isElite = forgeTab === "elite";
 
               return (
-                <div key={proj.id} style={{
+                <div key={proj.id} className={`forge-project-card forge-card-${pi}`} style={{
                   borderRadius: 14,
                   border: `1px solid ${isOpen ? proj.glow + "60" : "rgba(255,255,255,0.07)"}`,
                   overflow: "hidden",
-                  boxShadow: isOpen ? `0 0 30px rgba(${proj.glowRgb},0.12)` : "none",
-                  transition: "box-shadow 0.25s ease, border-color 0.25s ease",
+                  boxShadow: isOpen ? `0 0 30px rgba(${proj.glowRgb},0.15), 0 8px 32px rgba(${proj.glowRgb},0.08)` : "none",
                 }}>
                   {/* Card header */}
                   <div
@@ -775,7 +862,7 @@ function ProjectForge() {
                       border: `1px solid rgba(${proj.glowRgb},${isOpen ? 0.4 : 0.15})`,
                       display: "flex", alignItems: "center", justifyContent: "center",
                       fontSize: 20,
-                      boxShadow: isOpen ? `0 0 16px rgba(${proj.glowRgb},0.25)` : "none",
+                      boxShadow: isOpen ? `0 0 20px rgba(${proj.glowRgb},0.3)` : "none",
                       transition: "all 0.25s ease",
                     }}>{proj.emoji}</div>
 
@@ -797,6 +884,7 @@ function ProjectForge() {
                           padding: "2px 8px", borderRadius: 6,
                           fontFamily: "'DM Sans', sans-serif",
                           textTransform: "uppercase",
+                          animation: "pulse-glow 3s ease infinite",
                         }}>{proj.difficulty}</span>
 
                         {/* Time badge */}
@@ -808,6 +896,19 @@ function ProjectForge() {
                           padding: "2px 8px", borderRadius: 6,
                           fontFamily: "'DM Sans', sans-serif",
                         }}>⏱ {proj.time}</span>
+
+                        {/* Engineering tags */}
+                        {proj.tags && proj.tags.map((tag, ti) => (
+                          <span key={ti} style={{
+                            fontSize: 10, letterSpacing: 0.3,
+                            color: "rgba(255,255,255,0.28)",
+                            background: "rgba(255,255,255,0.04)",
+                            border: "1px solid rgba(255,255,255,0.08)",
+                            padding: "2px 7px", borderRadius: 6,
+                            fontFamily: "'DM Sans', sans-serif",
+                            transition: "all 0.15s ease",
+                          }}>{tag}</span>
+                        ))}
                       </div>
                     </div>
 
@@ -829,6 +930,7 @@ function ProjectForge() {
                       padding: "20px 20px 24px",
                       background: `linear-gradient(180deg, rgba(${proj.glowRgb},0.05) 0%, rgba(10,5,20,0.95) 60%)`,
                       borderTop: `1px solid rgba(${proj.glowRgb},0.15)`,
+                      animation: "forge-reveal 0.28s ease both",
                     }}>
                       {/* Description */}
                       <p style={{
@@ -848,9 +950,7 @@ function ProjectForge() {
                           }}>What You Build</div>
                           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
                             {proj.instructions.map((ins, ii) => (
-                              <div key={ii} style={{
-                                display: "flex", gap: 10, alignItems: "flex-start",
-                              }}>
+                              <div key={ii} style={{ display: "flex", gap: 10, alignItems: "flex-start" }}>
                                 <div style={{
                                   width: 5, height: 5, borderRadius: "50%",
                                   background: proj.glow, flexShrink: 0, marginTop: 6,
@@ -858,8 +958,7 @@ function ProjectForge() {
                                 }} />
                                 <span style={{
                                   fontFamily: "'DM Sans', sans-serif",
-                                  fontSize: 12, color: "rgba(255,255,255,0.5)",
-                                  lineHeight: 1.6,
+                                  fontSize: 12, color: "rgba(255,255,255,0.5)", lineHeight: 1.6,
                                 }}>{ins}</span>
                               </div>
                             ))}
@@ -867,28 +966,29 @@ function ProjectForge() {
                         </div>
 
                         {/* Stack */}
-                        <div style={{ minWidth: 120 }}>
-                          <div style={{
-                            fontFamily: "'DM Sans', sans-serif",
-                            fontSize: 10, letterSpacing: 3, textTransform: "uppercase",
-                            color: proj.glow, marginBottom: 12, opacity: 0.8,
-                          }}>Tech Stack</div>
-                          <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
-                            {proj.stack.map((s, si) => (
-                              <div key={si} style={{
-                                padding: "4px 10px", borderRadius: 8,
-                                background: `rgba(${proj.glowRgb},0.08)`,
-                                border: `1px solid rgba(${proj.glowRgb},0.2)`,
-                                fontSize: 11, fontWeight: 600,
-                                color: `rgba(${proj.glowRgb},0.9)`,
-                                fontFamily: "'DM Sans', sans-serif",
-                                textAlign: "center",
-                                cursor: "default",
-                                transition: "background 0.15s",
-                              }}>{s}</div>
-                            ))}
+                        {proj.stack && (
+                          <div style={{ minWidth: 130 }}>
+                            <div style={{
+                              fontFamily: "'DM Sans', sans-serif",
+                              fontSize: 10, letterSpacing: 3, textTransform: "uppercase",
+                              color: proj.glow, marginBottom: 12, opacity: 0.8,
+                            }}>Tech Stack</div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 5 }}>
+                              {proj.stack.map((s, si) => (
+                                <div key={si} style={{
+                                  padding: "4px 10px", borderRadius: 8,
+                                  background: `rgba(${proj.glowRgb},0.08)`,
+                                  border: `1px solid rgba(${proj.glowRgb},0.2)`,
+                                  fontSize: 11, fontWeight: 600,
+                                  color: `rgba(${proj.glowRgb},0.9)`,
+                                  fontFamily: "'DM Sans', sans-serif",
+                                  textAlign: "center",
+                                  transition: "background 0.15s",
+                                }}>{s}</div>
+                              ))}
+                            </div>
                           </div>
-                        </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -899,19 +999,14 @@ function ProjectForge() {
 
           {/* Bottom quote */}
           <div style={{
-            marginTop: 40,
-            paddingTop: 32,
+            marginTop: 40, paddingTop: 32,
             borderTop: "1px solid rgba(255,69,0,0.12)",
-            textAlign: "center",
-            position: "relative",
+            textAlign: "center", position: "relative",
           }}>
-            {/* Grid bg for quote */}
             <div style={{
               position: "absolute", inset: 0,
               backgroundImage: `linear-gradient(rgba(255,100,50,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,100,50,0.03) 1px, transparent 1px)`,
-              backgroundSize: "30px 30px",
-              borderRadius: 12,
-              pointerEvents: "none",
+              backgroundSize: "30px 30px", borderRadius: 12, pointerEvents: "none",
             }} />
             <p style={{
               fontFamily: "'Syne', sans-serif",
@@ -920,16 +1015,18 @@ function ProjectForge() {
               lineHeight: 1.7, position: "relative",
               background: "linear-gradient(135deg, rgba(255,255,255,0.55) 0%, rgba(255,107,53,0.8) 50%, rgba(236,72,153,0.7) 100%)",
               WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
-              maxWidth: 560, margin: "0 auto",
-              padding: "0 12px",
+              maxWidth: 560, margin: "0 auto", padding: "0 12px",
             }}>
               "Your GitHub should not look like a tutorial graveyard.<br />
               It should look like an engineering laboratory."
             </p>
           </div>
 
-        </div>
-      </div>
+          </div>
+          )}
+
+        </div>{/* end inner padding */}
+      </div>{/* end main container */}
     </div>
   );
 }
@@ -979,6 +1076,22 @@ export default function App() {
         .stagger-4 { animation: fadeUp 0.5s ease 0.4s both; }
         .stagger-5 { animation: fadeUp 0.5s ease 0.5s both; }
         .stagger-6 { animation: fadeUp 0.5s ease 0.6s both; }
+        @keyframes forge-reveal { from { opacity:0; transform: translateY(14px); filter: blur(4px); } to { opacity:1; transform: translateY(0); filter: blur(0); } }
+        @keyframes forge-border-pulse { 0%,100% { box-shadow: 0 0 0 1px rgba(255,80,50,0.25), 0 0 40px rgba(255,60,30,0.06); } 50% { box-shadow: 0 0 0 1px rgba(255,80,50,0.5), 0 0 70px rgba(255,60,30,0.14), 0 0 120px rgba(200,40,100,0.08); } }
+        @keyframes forge-arrow-pulse { 0%,100% { box-shadow: 0 0 8px rgba(255,69,0,0.3); } 50% { box-shadow: 0 0 18px rgba(255,69,0,0.7), 0 0 30px rgba(236,72,153,0.3); } }
+        .forge-card-0 { animation: forge-reveal 0.38s ease 0.04s both; }
+        .forge-card-1 { animation: forge-reveal 0.38s ease 0.10s both; }
+        .forge-card-2 { animation: forge-reveal 0.38s ease 0.16s both; }
+        .forge-card-3 { animation: forge-reveal 0.38s ease 0.22s both; }
+        .forge-card-4 { animation: forge-reveal 0.38s ease 0.28s both; }
+        .forge-card-5 { animation: forge-reveal 0.38s ease 0.34s both; }
+        .forge-card-6 { animation: forge-reveal 0.38s ease 0.40s both; }
+        .forge-card-7 { animation: forge-reveal 0.38s ease 0.46s both; }
+        .forge-card-8 { animation: forge-reveal 0.38s ease 0.52s both; }
+        .forge-card-9 { animation: forge-reveal 0.38s ease 0.58s both; }
+        .forge-card-10 { animation: forge-reveal 0.38s ease 0.64s both; }
+        .forge-project-card { transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.2s ease; }
+        .forge-project-card:hover { transform: translateY(-1px); }
       `}</style>
 
       <div style={{ maxWidth: 860, margin: "0 auto", padding: "52px 20px 100px" }}>
